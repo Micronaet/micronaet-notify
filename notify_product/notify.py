@@ -53,33 +53,42 @@ class ProductProduct(orm.Model):
         data_pool = self.pool.get('ir.model.data')
         group_pool = self.pool.get('res.groups')
         mail_pool = self.pool.get('mail.message')
+        try:
+            # Read notify group:
+            group_ref = data_pool.get_object_reference(
+                cr, uid, 'notify_product', 'group_notify_product')
+            group_id = group_ref[1]    
+            if not group_id:
+                _logger.error(
+                    '''Original group create by module not found: 
+                            group_notify_product''')
+                return False
+            group_proxy = group_pool.browse(cr, uid, group_id, context=context)
+            recipient_ids = [item.partner_id.id for item in group_proxy.users]
+            if not recipient_ids:
+                _logger.error(
+                    '''No recipients in group: group_notify_product''')
+                return False
 
-        # Read notify group:
-        group_ref = data_pool.get_object_reference(
-            cr, uid, 'notify_product', 'group_notify_product')
-        import pdb; pdb.set_trace()
-        if not group_ref:
-            _logger.error(
-                '''Original group create by module not found: 
-                        group_notify_product''')
-            return False
-        group_proxy.group_pool.browse(cr, uid, group_ref, context=context)
-        recipient_ids = group_proxy.user_ids
+            recipient_links = [(6, 0, recipient_ids)]
+            ref = data_pool.get_object_reference(
+                cr, uid, 'mail', 'mt_comment')
 
-        #recipient_links = [(4, partner_id) for partner_id in recipient_ids]
-        recipient_links = [(6, 0, recipient_ids)]
-        ref = data_pool.get_object_reference(
-            cr, uid, 'mail', 'mt_comment')
+            product_proxy = self.browse(cr, uid, ids, context=context)[0]
+            message = {
+                'type': 'notification',
+                'subject': _('New product'),
+                'body': _('Product creation: %s [%s]') % (
+                    product_proxy.name or '',
+                    product_proxy.default_code or _('###NOT PRESENT###'),
+                    ),
+                'partner_ids': recipient_links,
+                'subtype_id': ref[1],
+                }
 
-        message = {
-            'type': 'notification',
-            'subject': 'Prodotto creato',
-            'body': 'Creazione prodotto',
-            'partner_ids': recipient_links,
-            'subtype_id': ref,
-            }
-
-        mail_pool.create(cr, uid, message, context=context)
+            mail_pool.create(cr, uid, message, context=context)
+        except: 
+            _logger.error('Error sending email for notify creation!')    
         return True
     
     # ----------------
@@ -98,7 +107,7 @@ class ProductProduct(orm.Model):
             cr, uid, vals, context=context)
             
         # Nofitication:    
-        notify_product_creation(self, cr, uid, [res_id], context=None)    
+        self.notify_product_creation(cr, uid, [res_id], context=context)    
         return res_id
     
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
