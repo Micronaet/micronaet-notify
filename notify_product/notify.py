@@ -77,10 +77,12 @@ class ProductProduct(orm.Model):
             product_proxy = self.browse(cr, uid, ids, context=context)[0]
             message = {
                 'type': 'notification',
-                'subject': _('New product'),
+                'subject': _('New product: %s' % (
+                    product_proxy.default_code or _('### NOT PRESENT ###'),
+                    ),
                 'body': _('Product creation: %s [%s]') % (
                     product_proxy.name or '',
-                    product_proxy.default_code or _('###NOT PRESENT###'),
+                    product_proxy.default_code or _('### NOT PRESENT ###'),
                     ),
                 'partner_ids': recipient_links,
                 'subtype_id': ref[1],
