@@ -44,10 +44,14 @@ class ProductProduct(orm.Model):
     """    
     _inherit = 'product.product'
 
-    def notify_product_creation(self, cr, uid, ids, context=None):
+    def notify_product_operation(self, cr, uid, ids, context=None):
         ''' Function for notify product creation passed:
+            Context parameters:
+            notify_operation > 'create', 'write'
         '''
         assert len(ids) == 1, 'Work only with one product a time'
+        context = context or {}
+        notify_operation = context.get('notify_operation', 'create')
         
         # Pool used
         data_pool = self.pool.get('ir.model.data')
@@ -77,7 +81,10 @@ class ProductProduct(orm.Model):
             product_proxy = self.browse(cr, uid, ids, context=context)[0]
             message = {
                 'type': 'notification',
-                'subject': _('New product: %s') % (
+                'subject': _('%s %s: %s') % (
+                    product_proxy.company_id.name,
+                    'new product' if notify_operation == 'create' else \
+                        'update code',
                     product_proxy.default_code or _('### NOT PRESENT ###'),
                     ),
                 'body': _('Product creation: %s [%s]') % (
@@ -105,11 +112,35 @@ class ProductProduct(orm.Model):
             
             @return: returns a id of new record
         """    
+        context = context or {}
         res_id = super(ProductProduct, self).create(
             cr, uid, vals, context=context)
             
         # Nofitication:    
-        self.notify_product_creation(cr, uid, [res_id], context=context)    
+        context['notify_operation'] = 'create'
+        self.notify_product_operation(cr, uid, [res_id], context=context)    
         return res_id
+    
+    
+    def write(self, cr, uid, ids, vals, context=None):
+        """ Update redord(s) comes in {ids}, with new value comes as {vals}
+            return True on success, False otherwise
+            @param cr: cursor to database
+            @param uid: id of current user
+            @param ids: list of record ids to be update
+            @param vals: dict of new values to be set
+            @param context: context arguments, like lang, time zone
+            
+            @return: True on success, False otherwise
+        """
+        context = context or {}
+        # TODO read old code?
+        res = super(ProductProduct, self).write(
+            cr, uid, ids, vals, context=context)
+
+        if 'default_code' in vals:
+            context['notify_operation'] = 'write'
+            self.notify_product_operation(cr, uid, ids, context=context)    
+        return res
     
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
