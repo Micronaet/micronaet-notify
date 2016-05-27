@@ -46,11 +46,11 @@ class SaleOrder(orm.Model):
 
     def schedule_notify_new_sale_order_product(self, cr, uid, days_left=1, 
             context=None):
-        ''' Check new product creation and sale order
+        ''' Check new product creation and sale order        
         '''          
         context = context or {}
         context['days_left'] = days_left
-        return self.notify_sale_new_product_operation(cr, uid, ids, 
+        return self.notify_sale_new_product_operation(cr, uid, 0, 
             context=context)
         
     def notify_sale_new_product_operation(self, cr, uid, ids, days_left=1, 
@@ -95,12 +95,12 @@ class SaleOrder(orm.Model):
             # -------------------
             # Search new product:
             # -------------------
-            bottom_date = datetime.now().strftime(
-                DEFAULT_SERVER_DATETIME_FORMAT)
-                # TODO remove days_left
+            bottom_date = (datetime.now() - timedelta(
+                days=days_left)).strftime(
+                    DEFAULT_SERVER_DATE_FORMAT) # no datetime (for time 0:00:00)
 
             product_ids = product_pool.search(cr, uid, [
-                'create_date', '>=', bottom_date)
+                ('create_date', '>=', bottom_date),
                 ], context=context)
             if not product_ids:
                 return True
@@ -109,33 +109,69 @@ class SaleOrder(orm.Model):
             # Search sale.order.line for that product:
             # ----------------------------------------
             sol_ids = sol_pool.search(cr, uid, [
-                ('product_id', 'in', product_ids)], _order='order_id', 
+                ('product_id', 'in', product_ids)], order='order_id', 
                 context=context)    
             
             body = _('Find %s new product in last %s days') % (
                 len(product_ids), days_left)
-            body += '''<table>
-                           <tr>
-                               <td>Order</td>
-                               <td>Customer</td>
-                               <td>Product</td>
-                               <td>Qty</td>
-                           </tr>'''
+            body += '''
+                <style>
+                    .table_bf {
+                         border:1px 
+                         padding: 3px;
+                         solid black;
+                     }
+                    .table_bf td {
+                         border:1px 
+                         solid black;
+                         padding: 3px;
+                         text-align: center;
+                     }
+                    .table_bf th {
+                         border:1px 
+                         solid black;
+                         padding: 3px;
+                         text-align: center;
+                         background-color: grey;
+                         color: white;
+                     }
+                </style>
+                <table>
+                   <tr class='table_bf'>
+                       <td>Order</td>
+                       <td>Customer</td>
+                       <td>Code</td>
+                       <td>Qty</td>
+                       <td>State</td>
+                   </tr>'''
             
             for line in sol_pool.browse(cr, uid, sol_ids, context=context):
+                if line.order_id.state in ('draft', 'sent'):
+                    state = 'quotation'
+                elif line.order_id.state in ('cancel'):
+                    state = 'cancel'
+                else:    
+                    state = 'order'
+                  
                 body += '''
-                   <tr>
-                       <td>%s</td>
-                       <td>%s</td>
-                       <td>%s</td>
-                       <td>%s</td>
-                   </tr>'''
-                
-            boxy += '''</table>'''    
+                   <tr class='table_bf'>
+                       <td>&nbsp;&nbsp;%s&nbsp;&nbsp;</td>
+                       <td>&nbsp;&nbsp;%s&nbsp;&nbsp;</td>
+                       <td>&nbsp;&nbsp;%s&nbsp;&nbsp;</td>
+                       <td>&nbsp;&nbsp;%s&nbsp;&nbsp;</td>
+                       <td class='{text-align: right;}'>%s</td>
+                   </tr>''' % (
+                       line.order_id.name,
+                       line.order_id.partner_id.name,
+                       line.product_id.default_code,
+                       line.product_uom_qty,
+                       state,
+                       )                
+            body += '''</table>'''    
                     
             message = {
                 'type': 'notification',
-                'subject': _('Order with new product')
+                'subject': _('Order with new product'),
                 'body': body,
                 'partner_ids': recipient_links,
                 'subtype_id': ref[1],
