@@ -111,6 +111,9 @@ class SaleOrder(orm.Model):
             sol_ids = sol_pool.search(cr, uid, [
                 ('product_id', 'in', product_ids)], order='order_id', 
                 context=context)    
+
+            if not sol_ids:
+                return True
             
             body = _('Find %s new product in last %s days') % (
                 len(product_ids), days_left)
@@ -145,7 +148,10 @@ class SaleOrder(orm.Model):
                        <td>State</td>
                    </tr>'''
             
+            company_name = ''
             for line in sol_pool.browse(cr, uid, sol_ids, context=context):
+                if not company_name:
+                    company_name = line.order_id.company_id.name
                 if line.order_id.state in ('draft', 'sent'):
                     state = 'quotation'
                 elif line.order_id.state in ('cancel'):
@@ -171,7 +177,7 @@ class SaleOrder(orm.Model):
                     
             message = {
                 'type': 'notification',
-                'subject': _('Order with new product'),
+                'subject': _('%s: Order with new product') % company_name,
                 'body': body,
                 'partner_ids': recipient_links,
                 'subtype_id': ref[1],
