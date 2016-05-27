@@ -139,13 +139,13 @@ class SaleOrder(orm.Model):
                          color: white;
                      }
                 </style>
-                <table>
-                   <tr class='table_bf'>
-                       <td>Order</td>
-                       <td>Customer</td>
-                       <td>Code</td>
-                       <td>Qty</td>
-                       <td>State</td>
+                <table class='table_bf'>
+                   <tr>
+                       <th>Order</th>
+                       <th>Customer</th>
+                       <th>Code</th>
+                       <th>Qty</th>
+                       <th>State</th>
                    </tr>'''
             
             company_name = ''
@@ -160,7 +160,7 @@ class SaleOrder(orm.Model):
                     state = 'order'
                   
                 body += '''
-                   <tr class='table_bf'>
+                   <tr>
                        <td>&nbsp;&nbsp;%s&nbsp;&nbsp;</td>
                        <td>&nbsp;&nbsp;%s&nbsp;&nbsp;</td>
                        <td>&nbsp;&nbsp;%s&nbsp;&nbsp;</td>
