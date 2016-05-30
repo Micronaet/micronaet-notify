@@ -122,7 +122,7 @@ class ProductProduct(orm.Model):
         return res_id
     
     
-    def write(self, cr, uid, ids, vals, context=None):
+    '''def write(self, cr, uid, ids, vals, context=None):
         """ Update redord(s) comes in {ids}, with new value comes as {vals}
             return True on success, False otherwise
             @param cr: cursor to database
@@ -141,6 +141,6 @@ class ProductProduct(orm.Model):
         if 'default_code' in vals:
             context['notify_operation'] = 'write'
             self.notify_product_operation(cr, uid, ids, context=context)    
-        return res
+        return res'''
     
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
