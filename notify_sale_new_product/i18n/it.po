@@ -1,0 +1,40 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* notify_sale_new_product
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 8.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-07-27 16:28+0000\n"
+"PO-Revision-Date: 2017-08-06 20:43+0100\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: it\n"
+"X-Generator: Poedit 1.6.10\n"
+
+#. module: notify_sale_new_product
+#: code:addons/notify_sale_new_product/notify.py:180
+#, python-format
+msgid "%s: Order with new product"
+msgstr "%s: Ordine con prodotti nuovi"
+
+#. module: notify_sale_new_product
+#: code:addons/notify_sale_new_product/notify.py:118
+#, python-format
+msgid "Find %s new product in last %s days"
+msgstr "Trovati %s nuovi prodotti negli ultimi %s giorni"
+
+#. module: notify_sale_new_product
+#: model:res.groups,name:notify_sale_new_product.group_notify_sale_new_product
+msgid "Notify sale new product"
+msgstr "Notifica nuovi prodotti in vendita"
+
+#. module: notify_sale_new_product
+#: model:ir.model,name:notify_sale_new_product.model_sale_order
+msgid "Sales Order"
+msgstr "Ordine di vendita"

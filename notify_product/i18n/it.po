@@ -1,0 +1,47 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* notify_product
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 8.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-07-27 16:28+0000\n"
+"PO-Revision-Date: 2017-08-06 20:42+0100\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: it\n"
+"X-Generator: Poedit 1.6.10\n"
+
+#. module: notify_product
+#: code:addons/notify_product/notify.py:88
+#: code:addons/notify_product/notify.py:92
+#, python-format
+msgid "### NOT PRESENT ###"
+msgstr "### NON PRESENTE ###"
+
+#. module: notify_product
+#: code:addons/notify_product/notify.py:84
+#, python-format
+msgid "%s %s: %s"
+msgstr "%s %s: %s"
+
+#. module: notify_product
+#: model:res.groups,name:notify_product.group_notify_product
+msgid "Notify product creation"
+msgstr "Notifica la creazione prodotto"
+
+#. module: notify_product
+#: model:ir.model,name:notify_product.model_product_product
+msgid "Product"
+msgstr "Prodotto"
+
+#. module: notify_product
+#: code:addons/notify_product/notify.py:90
+#, python-format
+msgid "Product creation: %s [%s]"
+msgstr "Creazione prodotto: %s [%s]"
