@@ -50,6 +50,7 @@ class ProductProduct(orm.Model):
             notify_operation > 'create', 'write'
         '''
         assert len(ids) == 1, 'Work only with one product a time'
+        admin_uid = 1
         context = context or {}
         notify_operation = context.get('notify_operation', 'create')
         
@@ -94,8 +95,7 @@ class ProductProduct(orm.Model):
                 'partner_ids': recipient_links,
                 'subtype_id': ref[1],
                 }
-
-            mail_pool.create(cr, uid, message, context=context)
+            mail_pool.create(cr, admin_uid, message, context=context)
         except: 
             _logger.error('Error sending email for notify creation!')    
         return True
